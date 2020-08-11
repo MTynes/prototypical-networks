@@ -1,59 +1,56 @@
 import argparse
-
+import sys
 from train_custom_dataset import main
 
-class execution_arguments():
+
+class ExecutionArgumentList:
   def __init__(self):
     parser = argparse.ArgumentParser(description='Train prototypical networks')
 
     # data args
-
-    ##########################
-    default_dataset = 'custom'
+    default_dataset = 'custom' # or 'omniglot'
     parser.add_argument('--data.dataset', type=str, default=default_dataset, metavar='DS',
                         help="data set name (default: {:s})".format(default_dataset))
-    dataset_path = '/content/eeg_sz_spectrograms/gen_data_20s_70pct_overlap_-_high_nfft_all_channels_sml'
-    parser.add_argument('--data.data_path', type=str, default=dataset_path, metavar='DS',
-                      help="dataset path {:s}".format(dataset_path))    
-    labels_path = '/content/eeg_sz_spectrograms/gen_data_20s_70pct_overlap_-_high_nfft_all_channels_sml'
-    parser.add_argument('--data.labels_path', type=str, default=labels_path, metavar='DS',
+    dataset_path='/content/eeg_sz_spectrograms/gen_data_20s_70pct_overlap_-_high_nfft_all_channels_sml'
+    parser.add_argument('--data.data_path', type=str, default=dataset_path, metavar='DSPATH',
+                      help="dataset path {:s}".format(dataset_path))
+    labels_path= dataset_path
+    parser.add_argument('--data.labels_path', type=str, default=labels_path, metavar='LABELSPATH',
                       help="location of the label .txt files".format(labels_path))
-
-    ##########################
 
     default_split = 'vinyals'
     parser.add_argument('--data.split', type=str, default=default_split, metavar='SP',
-                        help="split name (default: {:s})".format(default_split))
+                        help="Split name (default: {:s})".format(default_split))
     parser.add_argument('--data.way', type=int, default=60, metavar='WAY',
-                        help="number of classes per episode (default: 60)")
+                        help="Number of classes per episode (default: 60)")
     parser.add_argument('--data.shot', type=int, default=5, metavar='SHOT',
-                        help="number of support examples per class (default: 5)")
+                        help="Number of support examples per class (default: 5)")
     parser.add_argument('--data.query', type=int, default=5, metavar='QUERY',
-                        help="number of query examples per class (default: 5)")
+                        help="Number of query examples per class (default: 5)")
     parser.add_argument('--data.test_way', type=int, default=5, metavar='TESTWAY',
-                        help="number of classes per episode in test. 0 means same as data.way (default: 5)")
+                        help="Number of classes per episode in test. 0 means same as data.way (default: 5)")
     parser.add_argument('--data.test_shot', type=int, default=0, metavar='TESTSHOT',
-                        help="number of support examples per class in test. 0 means same as data.shot (default: 0)")
+                        help="Number of support examples per class in test. 0 means same as data.shot (default: 0)")
     parser.add_argument('--data.test_query', type=int, default=15, metavar='TESTQUERY',
-                        help="number of query examples per class in test. 0 means same as data.query (default: 15)")
+                        help="Number of query examples per class in test. 0 means same as data.query (default: 15)")
     parser.add_argument('--data.train_episodes', type=int, default=100, metavar='NTRAIN',
-                        help="number of train episodes per epoch (default: 100)")
+                        help="Number of train episodes per epoch (default: 100)")
     parser.add_argument('--data.test_episodes', type=int, default=100, metavar='NTEST',
-                        help="number of test episodes per epoch (default: 100)")
-    parser.add_argument('--data.trainval', action='store_true', help="run in train+validation mode (default: False)")
-    parser.add_argument('--data.sequential', action='store_true', help="use sequential sampler instead of episodic (default: False)")
-    parser.add_argument('--data.cuda', action='store_true', help="run in CUDA mode (default: False)")
+                        help="Number of test episodes per epoch (default: 100)")
+    parser.add_argument('--data.trainval', action='store_true', help="Run in train+validation mode (default: False)")
+    parser.add_argument('--data.sequential', action='store_true', help="Use sequential sampler instead of episodic (default: False)")
+    parser.add_argument('--data.cuda', action='store_true', help="Run in CUDA mode (default: False)")
 
     # model args
     default_model_name = 'protonet_conv'
     parser.add_argument('--model.model_name', type=str, default=default_model_name, metavar='MODELNAME',
-                        help="model name (default: {:s})".format(default_model_name))
+                        help="Model name (default: {:s})".format(default_model_name))
     parser.add_argument('--model.x_dim', type=str, default='4,28,28', metavar='XDIM',
-                        help="dimensionality of input images (default: '4,28,28')")
+                        help="Dimensionality of input images in format 'channels, width, height' (default: '4,28,28')")
     parser.add_argument('--model.hid_dim', type=int, default=64, metavar='HIDDIM',
-                        help="dimensionality of hidden layers (default: 64)")
+                        help="Dimensionality of hidden layers (default: 64)")
     parser.add_argument('--model.z_dim', type=int, default=64, metavar='ZDIM',
-                        help="dimensionality of input images (default: 64)")
+                        help="Dimensionality of input images (default: 64)")
 
     # train args
     parser.add_argument('--train.epochs', type=int, default=10000, metavar='NEPOCHS',
@@ -79,10 +76,13 @@ class execution_arguments():
                         help="directory where experiments should be saved (default: {:s})".format(default_exp_dir))
     self.parser = parser
 
-  def get_arguments(self):
+   def get_arguments(self):
     args = vars(self.parser.parse_args())
     return args
 
-ea = execution_arguments()
-meta_args = ea.get_arguments()
-main(meta_args)
+
+if __name__ == "__main__":
+    print(sys.argv)
+    eal = ExecutionArgumentList()
+    meta_args = eal.get_arguments()
+    main(meta_args)

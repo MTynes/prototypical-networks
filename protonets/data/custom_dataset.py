@@ -16,23 +16,29 @@ from torchnet.transform import compose
 import protonets
 from protonets.data.base import convert_dict, CudaTransform, EpisodicBatchSampler, SequentialBatchSampler
 
-CUSTOM_DATASET_CACHE = { }
+CUSTOM_DATASET_CACHE = {}
+
 
 def load_image_path(key, out_field, d):
     d[out_field] = Image.open(d[key])
     return d
 
+
 def convert_tensor(key, d):
-    d[key] = 1.0 - torch.from_numpy(np.array(d[key], np.float32, copy=False)).transpose(0, 1).contiguous().view(4, d[key].size[0], d[key].size[1])
+    d[key] = 1.0 - torch.from_numpy(np.array(d[key], np.float32, copy=False)).transpose(0, 1)\
+        .contiguous().view(4, d[key].size[0], d[key].size[1])
     return d
+
 
 def rotate_image(key, rot, d):
     d[key] = d[key].rotate(rot)
     return d
 
+
 def scale_image(key, height, width, d):
     d[key] = d[key].resize((height, width))
     return d
+
 
 def load_class_images(opt, d):
     if d['class'] not in CUSTOM_DATASET_CACHE:
@@ -43,7 +49,8 @@ def load_class_images(opt, d):
         class_images = sorted(glob.glob(os.path.join(image_dir, '*.png')))
         if len(class_images) == 0:
             raise Exception("""No images found for custom dataset class {} at {}. 
-                    Verify that directory structure adheres to instructions in READ.ME and/or the sample notebook""".format(d['class'], image_dir))
+                    Verify that directory structure adheres to instructions in READ.ME and/or the sample notebook"""
+                            .format(d['class'], image_dir))
 
         image_ds = TransformDataset(ListDataset(class_images),
                                     compose([partial(convert_dict, 'file_name'),
@@ -56,9 +63,10 @@ def load_class_images(opt, d):
 
         for sample in loader:
             CUSTOM_DATASET_CACHE[d['class']] = sample['data']
-            break # only need one sample because batch size equal to dataset length
+            break  # only need one sample because batch size equal to dataset length
 
-    return { 'class': d['class'], 'data': CUSTOM_DATASET_CACHE[d['class']] }
+    return {'class': d['class'], 'data': CUSTOM_DATASET_CACHE[d['class']]}
+
 
 def extract_episode(n_support, n_query, d):
     # data: N x C x H x W
@@ -80,11 +88,11 @@ def extract_episode(n_support, n_query, d):
         'xq': xq
     }
 
+
 def load(opt, splits):
 
-    ret = { }
+    ret = {}
     for split in splits:
-        print('split: ', split)
         if split in ['val', 'test'] and opt['data.test_way'] != 0:
             n_way = opt['data.test_way']
         else:
@@ -117,7 +125,7 @@ def load(opt, splits):
 
         data_path = opt['data.labels_path']
         with open(os.path.join(data_path, "{:s}.txt".format(split)), 'r') as f:
-              for class_name in f.readlines():
+            for class_name in f.readlines():
                 class_names.append(class_name.rstrip('\n'))
         ds = TransformDataset(ListDataset(class_names), transforms)
 

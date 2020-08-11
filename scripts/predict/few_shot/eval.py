@@ -10,6 +10,7 @@ from protonets.utils import filter_opt, merge_dict
 import protonets.utils.data as data_utils
 import protonets.utils.model as model_utils
 
+
 def main(opt):
     # load model
     model = torch.load(opt['model.model_path'])
@@ -25,7 +26,7 @@ def main(opt):
     model_opt['log.fields'] = model_opt['log.fields'].split(',')
 
     # construct data
-    data_opt = { 'data.' + k: v for k,v in filter_opt(model_opt, 'data').items() }
+    data_opt = {'data.' + k: v for k, v in filter_opt(model_opt, 'data').items()}
 
     episode_fields = {
         'data.test_way': 'data.way',
@@ -34,7 +35,7 @@ def main(opt):
         'data.test_episodes': 'data.train_episodes'
     }
 
-    for k,v in episode_fields.items():
+    for k, v in episode_fields.items():
         if opt[k] != 0:
             data_opt[k] = opt[k]
         elif model_opt[k] != 0:
@@ -55,10 +56,11 @@ def main(opt):
     if data_opt['data.cuda']:
         model.cuda()
 
-    meters = { field: tnt.meter.AverageValueMeter() for field in model_opt['log.fields'] }
+    meters = {field: tnt.meter.AverageValueMeter() for field in model_opt['log.fields']}
 
     model_utils.evaluate(model, data['test'], meters, desc="test")
 
-    for field,meter in meters.items():
+    for field, meter in meters.items():
         mean, std = meter.value()
-        print("test {:s}: {:0.6f} +/- {:0.6f}".format(field, mean, 1.96 * std / math.sqrt(data_opt['data.test_episodes'])))
+        print("test {:s}: {:0.6f} +/- {:0.6f}".format(field,
+                                                      mean, 1.96 * std / math.sqrt(data_opt['data.test_episodes'])))
