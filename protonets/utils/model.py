@@ -15,16 +15,22 @@ def load(opt):
 
 def evaluate(model, data_loader, meters, desc=None):
     model.eval()
+    metrics_list = []  # log all loss and acc values
 
-    for field,meter in meters.items():
+    for field, meter in meters.items():
         meter.reset()
 
     if desc is not None:
         data_loader = tqdm(data_loader, desc=desc)
 
     for sample in data_loader:
+
         _, output = model.loss(sample)
+        metrics_list.append({'preds': output['preds'],
+                             'true_labels': output['true_labels'],
+                             'class': output['class'],
+                             'acc_val_ind': output['acc_val_ind']})
         for field, meter in meters.items():
             meter.add(output[field])
 
-    return meters
+    return meters, metrics_list

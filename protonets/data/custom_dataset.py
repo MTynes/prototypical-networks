@@ -25,7 +25,7 @@ def load_image_path(key, out_field, d):
 
 
 def convert_tensor(key, d):
-    d[key] = 1.0 - torch.from_numpy(np.array(d[key], np.float32, copy=False)).transpose(0, 1)\
+    d[key] = 1.0 - torch.from_numpy(np.array(d[key], np.float32, copy=False)).transpose(0, 1) \
         .contiguous().view(4, d[key].size[0], d[key].size[1])
     return d
 
@@ -75,7 +75,7 @@ def extract_episode(n_support, n_query, d):
     if n_query == -1:
         n_query = n_examples - n_support
 
-    example_inds = torch.randperm(n_examples)[:(n_support+n_query)]
+    example_inds = torch.randperm(n_examples)[:(n_support + n_query)]
     support_inds = example_inds[:n_support]
     query_inds = example_inds[n_support:]
 
@@ -90,7 +90,6 @@ def extract_episode(n_support, n_query, d):
 
 
 def load(opt, splits):
-
     ret = {}
     for split in splits:
         if split in ['val', 'test'] and opt['data.test_way'] != 0:

@@ -20,12 +20,13 @@ class Flatten(nn.Module):
 class Protonet(nn.Module):
     def __init__(self, encoder):
         super(Protonet, self).__init__()
-        
+
         self.encoder = encoder
 
     def loss(self, sample):
         xs = Variable(sample['xs'])  # support
         xq = Variable(sample['xq'])  # query
+        sample_class = sample['class']  # sample class
 
         n_class = xs.size(0)
         assert xq.size(0) == n_class
@@ -44,8 +45,8 @@ class Protonet(nn.Module):
         z = self.encoder.forward(x)
         z_dim = z.size(-1)
 
-        z_proto = z[:n_class*n_support].view(n_class, n_support, z_dim).mean(1)
-        zq = z[n_class*n_support:]
+        z_proto = z[:n_class * n_support].view(n_class, n_support, z_dim).mean(1)
+        zq = z[n_class * n_support:]
 
         dists = euclidean_dist(zq, z_proto)
 
@@ -58,7 +59,12 @@ class Protonet(nn.Module):
 
         return loss_val, {
             'loss': loss_val.item(),
-            'acc': acc_val.item()
+            'acc': acc_val.item(),
+            'preds': y_hat,
+            'true_labels': target_inds.squeeze(),
+            'acc_val_ind': torch.eq(y_hat, target_inds.squeeze()).float(),
+            'class': sample_class
+
         }
 
 
