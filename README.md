@@ -19,9 +19,10 @@ As with the original code, citations should be as follows:
  The code expects the directory with all images and the directory containing the label files (train.txt, val.txt, test.txt, or train_val.txt) to be passed to it.
  
  # Usage example, with GPU
+ ```
  images_directory = '/content/eeg/all_images'
  lr = 0.0001
  epochs = 10000
  ! python scripts/train/few_shot/run_train_custom_dataset.py --data.data_path {images_directory} --data.labels_path {images_directory} --train.learning_rate {lr} --train.epochs {epochs} --data.cuda 
-
+```
 
