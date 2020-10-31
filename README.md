@@ -1,9 +1,12 @@
 # Prototypical Networks for Few-shot Learning
 
-Code for the NIPS 2017 paper [Prototypical Networks for Few-shot Learning](http://papers.nips.cc/paper/6996-prototypical-networks-for-few-shot-learning.pdf).
+This is a modified version of work by [jakesnell](https://github.com/jakesnell/prototypical-networks), which permits the use of a custom dataset.
+It has been tested using Google Colab with and without GPU.
 
-If you use this code, please cite our paper:
 
+The original code implements the NeurIPS paper [Prototypical Networks for Few-shot Learning](http://papers.nips.cc/paper/6996-prototypical-networks-for-few-shot-learning.pdf).
+
+As with the original code, citations should be as follows:
 ```
 @inproceedings{snell2017prototypical,
   title={Prototypical Networks for Few-shot Learning},
@@ -12,27 +15,13 @@ If you use this code, please cite our paper:
   year={2017}
  }
  ```
+ 
+ The code expects the directory with all images and the directory containing the label files (train.txt, val.txt, test.txt, or train_val.txt) to be passed to it.
+ 
+ # Usage example, with GPU
+ images_directory = '/content/eeg/all_images'
+ lr = 0.0001
+ epochs = 10000
+ ! python scripts/train/few_shot/run_train_custom_dataset.py --data.data_path {images_directory} --data.labels_path {images_directory} --train.learning_rate {lr} --train.epochs {epochs} --data.cuda 
 
-## Training a prototypical network
 
-### Install dependencies
-
-* This code has been tested on Ubuntu 16.04 with Python 3.6 and PyTorch 0.4.
-* Install [PyTorch and torchvision](http://pytorch.org/).
-* Install [torchnet](https://github.com/pytorch/tnt) by running `pip install git+https://github.com/pytorch/tnt.git@master`.
-* Install the protonets package by running `python setup.py install` or `python setup.py develop`.
-
-### Set up the Omniglot dataset
-
-* Run `sh download_omniglot.sh`.
-
-### Train the model
-
-* Run `python scripts/train/few_shot/run_train.py`. This will run training and place the results into `results`.
-  * You can specify a different output directory by passing in the option `--log.exp_dir EXP_DIR`, where `EXP_DIR` is your desired output directory.
-  * If you are running on a GPU you can pass in the option `--data.cuda`.
-* Re-run in trainval mode `python scripts/train/few_shot/run_trainval.py`. This will save your model into `results/trainval` by default.
-
-### Evaluate
-
-* Run evaluation as: `python scripts/predict/few_shot/run_eval.py --model.model_path results/trainval/best_model.pt`.
