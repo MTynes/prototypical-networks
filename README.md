@@ -23,6 +23,7 @@ As with the original code, citations should be as follows:
  images_directory = '/content/eeg/all_images'
  lr = 0.0001
  epochs = 10000
- ! python scripts/train/few_shot/run_train_custom_dataset.py --data.data_path {images_directory} --data.labels_path {images_directory} --train.learning_rate {lr} --train.epochs {epochs} --data.cuda 
+ patience = 300 # number of iterations to wait after last improvement in validation loss before terminating execution
+ ! python scripts/train/few_shot/run_train_custom_dataset.py --data.data_path {images_directory} --data.labels_path {images_directory} --train.learning_rate {lr} --train.epochs {epochs} --train.patience{patience} --data.cuda 
 ```
 
